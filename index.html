@@ -3,212 +3,185 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dla Ciebie ❤️</title>
+    <title>Interaktywna Sieć</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@400;600&display=swap');
-
         body {
             margin: 0;
             padding: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            /* Animowane tło gradientowe */
-            background: linear-gradient(-45deg, #ff0844, #ffb199, #ff1493, #8a2387);
-            background-size: 400% 400%;
-            animation: gradientBG 10s ease infinite;
-            font-family: 'Montserrat', sans-serif;
-            overflow: hidden;
-            text-align: center;
-            cursor: pointer; /* Zmienia kursor, sugerując możliwość kliknięcia */
+            background-color: #050505; /* Bardzo ciemny szary, prawie czarny */
+            overflow: hidden; /* Ukrywa paski przewijania */
+            font-family: 'Courier New', Courier, monospace;
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .container {
+        #ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+            pointer-events: none;
             z-index: 10;
-            background: rgba(255, 255, 255, 0.15);
-            padding: 50px 60px;
-            border-radius: 30px;
-            box-shadow: 0 0 40px rgba(255, 20, 147, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.5);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            transform: scale(0.9);
-            animation: floatCard 4s ease-in-out infinite;
-            max-width: 80%;
         }
 
-        @keyframes floatCard {
-            0% { transform: translateY(0px) scale(0.95); box-shadow: 0 0 40px rgba(255, 20, 147, 0.5); }
-            50% { transform: translateY(-15px) scale(1); box-shadow: 0 0 60px rgba(255, 20, 147, 0.8); }
-            100% { transform: translateY(0px) scale(0.95); box-shadow: 0 0 40px rgba(255, 20, 147, 0.5); }
-        }
-
-        h1 {
-            font-family: 'Dancing Script', cursive;
-            color: #ffffff;
-            font-size: 6rem;
-            margin: 0 0 20px 0;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px #ff1493;
-            animation: heartbeat 1.5s infinite;
-        }
-
-        @keyframes heartbeat {
-            0%, 100% { transform: scale(1); }
-            10%, 30% { transform: scale(1.1); }
-            20% { transform: scale(1); }
-        }
-
-        .poem {
-            color: #fff;
-            font-size: 1.5rem;
-            line-height: 1.8;
-            min-height: 120px; /* Miejsce na wiersz */
-            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
-            font-weight: 600;
-        }
-
-        .instruction {
-            margin-top: 30px;
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.7);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            animation: pulseText 2s infinite;
-        }
-
-        @keyframes pulseText {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
-        }
-
-        /* Automatyczne serduszka w tle */
-        .heart {
-            position: absolute;
-            color: rgba(255, 255, 255, 0.6);
-            pointer-events: none;
-            animation: floatUp linear infinite;
-        }
-
-        @keyframes floatUp {
-            0% { transform: translateY(100vh) scale(0) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(-10vh) scale(1.5) rotate(360deg); opacity: 0; }
-        }
-
-        /* Serduszka pojawiające się przy kliknięciu */
-        .click-heart {
-            position: absolute;
-            color: #ff1493;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-            pointer-events: none;
-            animation: burst 1s ease-out forwards;
-        }
-
-        @keyframes burst {
-            0% { transform: scale(0) translate(0, 0); opacity: 1; }
-            100% { transform: scale(1.5) translate(var(--tx), var(--ty)); opacity: 0; }
+        canvas {
+            display: block;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Kocham Cię! ❤️</h1>
-        <div class="poem" id="poem-container"></div>
-        <div class="instruction">Kliknij gdziekolwiek na ekranie ✨</div>
+    <div id="ui">
+        <h2>System Aktywny</h2>
+        <p>Poruszaj myszką, aby ingerować w pole siłowe.</p>
     </div>
 
-    <script>
-        // --- EFEKT PISANIA NA MASZYNIE (WIERSZYK) ---
-        const poemLines = [
-            "Dla Ciebie bije serce me,",
-            "Z każdym oddechem kocham Cię.",
-            "Jesteś jak słońce w pochmurny dzień,",
-            "Rozjaśniasz każdy mój smutek i cień. ✨"
-        ];
-        
-        const poemContainer = document.getElementById('poem-container');
-        let lineIndex = 0;
-        let charIndex = 0;
+    <canvas id="canvas"></canvas>
 
-        function typeWriter() {
-            if (lineIndex < poemLines.length) {
-                if (charIndex < poemLines[lineIndex].length) {
-                    poemContainer.innerHTML += poemLines[lineIndex].charAt(charIndex);
-                    charIndex++;
-                    setTimeout(typeWriter, 50); // Prędkość pisania liter
-                } else {
-                    poemContainer.innerHTML += "<br>"; // Nowa linia
-                    lineIndex++;
-                    charIndex = 0;
-                    setTimeout(typeWriter, 500); // Pauza między linijkami
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particlesArray = [];
+        
+        // Obiekt przechowujący pozycję myszki i zasięg jej oddziaływania
+        let mouse = {
+            x: null,
+            y: null,
+            radius: (canvas.height/80) * (canvas.width/80)
+        }
+
+        window.addEventListener('mousemove',
+            function(event) {
+                mouse.x = event.x;
+                mouse.y = event.y;
+            }
+        );
+
+        window.addEventListener('mouseout',
+            function() {
+                mouse.x = undefined;
+                mouse.y = undefined;
+            }
+        );
+
+        // Klasa tworząca pojedynczą cząsteczkę
+        class Particle {
+            constructor(x, y, directionX, directionY, size, color) {
+                this.x = x;
+                this.y = y;
+                this.directionX = directionX;
+                this.directionY = directionY;
+                this.size = size;
+                this.color = color;
+            }
+            
+            // Metoda rysująca cząsteczkę
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+                ctx.fillStyle = '#00ffff';
+                ctx.fill();
+            }
+            
+            // Metoda aktualizująca pozycję i sprawdzająca kolizję z myszką
+            update() {
+                // Odbijanie od krawędzi ekranu
+                if (this.x > canvas.width || this.x < 0) {
+                    this.directionX = -this.directionX;
+                }
+                if (this.y > canvas.height || this.y < 0) {
+                    this.directionY = -this.directionY;
+                }
+
+                // Sprawdzanie odległości od myszki (twierdzenie Pitagorasa)
+                let dx = mouse.x - this.x;
+                let dy = mouse.y - this.y;
+                let distance = Math.sqrt(dx*dx + dy*dy);
+                
+                // Odepchnięcie cząsteczek od kursora
+                if (distance < mouse.radius + this.size) {
+                    if (mouse.x < this.x && this.x < canvas.width - this.size * 10) {
+                        this.x += 3;
+                    }
+                    if (mouse.x > this.x && this.x > this.size * 10) {
+                        this.x -= 3;
+                    }
+                    if (mouse.y < this.y && this.y < canvas.height - this.size * 10) {
+                        this.y += 3;
+                    }
+                    if (mouse.y > this.y && this.y > this.size * 10) {
+                        this.y -= 3;
+                    }
+                }
+                
+                this.x += this.directionX;
+                this.y += this.directionY;
+                this.draw();
+            }
+        }
+
+        // Inicjalizacja tablicy cząsteczek
+        function init() {
+            particlesArray = [];
+            let numberOfParticles = (canvas.height * canvas.width) / 9000;
+            for (let i = 0; i < numberOfParticles; i++) {
+                let size = (Math.random() * 2) + 1;
+                let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
+                let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
+                let directionX = (Math.random() * 2) - 1;
+                let directionY = (Math.random() * 2) - 1;
+                let color = '#00ffff';
+
+                particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
+            }
+        }
+
+        // Łączenie cząsteczek liniami, jeśli są blisko siebie
+        function connect() {
+            let opacityValue = 1;
+            for (let a = 0; a < particlesArray.length; a++) {
+                for (let b = a; b < particlesArray.length; b++) {
+                    let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x))
+                    + ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
+                    
+                    if (distance < (canvas.width/7) * (canvas.height/7)) {
+                        opacityValue = 1 - (distance / 20000);
+                        ctx.strokeStyle = 'rgba(0, 255, 255,' + opacityValue + ')';
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                        ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+                        ctx.stroke();
+                    }
                 }
             }
         }
 
-        // Rozpocznij pisanie po 1 sekundzie od załadowania
-        setTimeout(typeWriter, 1000);
+        // Pętla animacji
+        function animate() {
+            requestAnimationFrame(animate);
+            ctx.clearRect(0, 0, innerWidth, innerHeight);
 
-        // --- AUTOMATYCZNIE LATAJĄCE SERDUSZKA (TŁO) ---
-        function createBackgroundHeart() {
-            const heart = document.createElement('div');
-            heart.classList.add('heart');
-            
-            // Losowe kolory i symbole
-            const symbols = ['❤️', '💖', '✨', '💕'];
-            heart.innerHTML = symbols[Math.floor(Math.random() * symbols.length)];
-            
-            heart.style.left = Math.random() * 100 + 'vw';
-            heart.style.animationDuration = Math.random() * 3 + 4 + 's';
-            heart.style.fontSize = Math.random() * 1.5 + 1 + 'rem';
-
-            document.body.appendChild(heart);
-
-            setTimeout(() => {
-                heart.remove();
-            }, 7000);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+            }
+            connect();
         }
 
-        setInterval(createBackgroundHeart, 400);
-
-        // --- EFEKT WYBUCHU SERDUSZEK PO KLIKNIĘCIU ---
-        document.addEventListener('click', function(e) {
-            const numHearts = 10; // Ilość serduszek przy jednym kliknięciu
-            
-            for (let i = 0; i < numHearts; i++) {
-                const clickHeart = document.createElement('div');
-                clickHeart.classList.add('click-heart');
-                clickHeart.innerHTML = '❤️';
-                
-                // Pozycja kliknięcia
-                clickHeart.style.left = e.clientX + 'px';
-                clickHeart.style.top = e.clientY + 'px';
-                
-                // Losowy kierunek rozbłysku
-                const angle = Math.random() * Math.PI * 2;
-                const distance = Math.random() * 100 + 50;
-                const tx = Math.cos(angle) * distance + 'px';
-                const ty = Math.sin(angle) * distance + 'px';
-                
-                clickHeart.style.setProperty('--tx', tx);
-                clickHeart.style.setProperty('--ty', ty);
-                
-                // Losowa wielkość
-                clickHeart.style.fontSize = Math.random() * 2 + 1 + 'rem';
-                
-                document.body.appendChild(clickHeart);
-                
-                setTimeout(() => {
-                    clickHeart.remove();
-                }, 1000);
+        // Reakcja na zmianę rozmiaru okna
+        window.addEventListener('resize',
+            function() {
+                canvas.width = innerWidth;
+                canvas.height = innerHeight;
+                mouse.radius = ((innerHeight/80) * (innerWidth/80));
+                init();
             }
-        });
-    </script>
+        );
 
+        init();
+        animate();
+    </script>
 </body>
 </html>
